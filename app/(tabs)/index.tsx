@@ -1,98 +1,172 @@
+import { useAuth } from '@/hooks/useAuth';
+import { Database } from '@/types/database.types';
+import { supabase } from '@/utils/supabase';
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Heart, ShieldCheck } from 'lucide-react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
-export default function HomeScreen() {
+export default function DiscoveryScreen() {
+  const { profile, loading: authLoading } = useAuth();
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (profile?.role === 'male' && profile.is_subscribed) {
+      fetchProfiles();
+    } else {
+      setLoading(false);
+    }
+  }, [profile]);
+
+  async function fetchProfiles() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('role', 'female')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      Alert.alert('Error', error.message);
+    } else {
+      setProfiles(data || []);
+    }
+    setLoading(false);
+  }
+
+  async function handleActivate() {
+    setLoading(true);
+    // Simulate payment/activation
+    const { error } = await supabase
+      .from('profiles')
+      .update({ is_subscribed: true })
+      .eq('id', profile?.id || '');
+
+    if (error) {
+      Alert.alert('Error', error.message);
+    } else {
+      Alert.alert('Account Activated', 'Your profile is now visible and you can contact Walis!');
+      // fetchProfile in hook should trigger re-render
+    }
+    setLoading(false);
+  }
+
+  if (authLoading || (loading && profiles.length === 0)) {
+    return (
+      <View className="flex-1 justify-center items-center bg-white">
+        <ActivityIndicator size="large" color="#064E3B" />
+      </View>
+    );
+  }
+
+  if (profile?.role === 'male' && !profile.is_subscribed) {
+    return (
+      <View className="flex-1 justify-center items-center bg-white px-8">
+        <View className="bg-gold-50 p-6 rounded-full mb-6">
+          <ShieldCheck size={64} color="#D97706" />
+        </View>
+        <Text className="text-2xl font-bold text-emerald-900 text-center mb-4">
+          Activate Your Profile
+        </Text>
+        <Text className="text-gray-600 text-center mb-10 leading-6">
+          Your profile is currently deactivated. To start searching for your companion and contacting Walis, a one-time activation is required.
+        </Text>
+        <TouchableOpacity 
+          onPress={handleActivate}
+          className="bg-emerald-900 w-full py-4 rounded-2xl shadow-lg items-center"
+        >
+          <Text className="text-white font-bold text-lg">Activate Now</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (profile?.role !== 'male') {
+    return (
+      <View className="flex-1 justify-center items-center bg-white px-8">
+        <Text className="text-xl font-bold text-emerald-900 text-center mb-2">
+          Welcome to Halal Match
+        </Text>
+        <Text className="text-gray-500 text-center">
+          Navigate to 'Requests' to see incoming proposals.
+        </Text>
+      </View>
+    );
+  }
+
+  async function handleRequest(female: Profile) {
+    if (!profile) return;
+    if (!female.wali_id) {
+      Alert.alert('Incomplete Profile', 'This profile does not have a linked Wali yet.');
+      return;
+    }
+
+    setLoading(true);
+    const { error } = await supabase.from('connection_requests').insert({
+      sender_id: profile.id,
+      receiver_id: female.id,
+      wali_id: female.wali_id,
+      status: 'pending',
+      message_to_wali: `Salam, I am interested in connecting with your ward ${female.first_name}.`,
+    });
+
+    if (error) {
+      if (error.code === '23505') {
+        Alert.alert('Already Sent', 'You have already sent a request to this person.');
+      } else {
+        Alert.alert('Error', error.message);
+      }
+    } else {
+      Alert.alert('Success', 'Request sent to Wali! You will be notified when they approve.');
+    }
+    setLoading(false);
+  }
+
+  const renderItem = ({ item }: { item: Profile }) => (
+    <View className="bg-white rounded-3xl mb-6 overflow-hidden shadow-sm border border-gray-100">
+      <Image
+        source={item.avatar_url || 'https://images.unsplash.com/photo-1594241081155-27a3a6944e05?q=80&w=3270&auto=format&fit=crop'}
+        className="w-full h-80"
+        contentFit="cover"
+      />
+      <View className="p-5">
+        <View className="flex-row justify-between items-center mb-2">
+          <Text className="text-2xl font-bold text-emerald-900">
+            {item.first_name}, {item.last_name}
+          </Text>
+          {item.is_verified && <ShieldCheck size={20} color="#D97706" />}
+        </View>
+        <Text className="text-gray-600 mb-4 leading-5" numberOfLines={3}>
+          {item.bio || "Seeking for a meaningful connection based on Islamic values..."}
+        </Text>
+        
+        <TouchableOpacity 
+          className="bg-emerald-900 flex-row justify-center items-center py-4 rounded-xl"
+          onPress={() => handleRequest(item)}
+        >
+          <Heart size={20} color="white" className="mr-2" />
+          <Text className="text-white font-bold ml-2">Contact Wali</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <View className="flex-1 bg-gray-50">
+      <FlatList
+        data={profiles}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ padding: 16 }}
+        ListEmptyComponent={
+          <View className="flex-1 justify-center items-center mt-20">
+            <Text className="text-gray-400">No profiles found yet.</Text>
+          </View>
+        }
+      />
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
