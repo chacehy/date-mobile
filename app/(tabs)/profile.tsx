@@ -1,12 +1,14 @@
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/utils/supabase';
 import { Image } from 'expo-image';
-import { CreditCard, HelpCircle, LogOut, Settings, ShieldCheck, User } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { ArrowLeft, CreditCard, HelpCircle, LogOut, Settings, ShieldCheck, User } from 'lucide-react-native';
 import React from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ProfileScreen() {
   const { profile, user } = useAuth();
+  const router = useRouter();
 
   async function handleSignOut() {
     const { error } = await supabase.auth.signOut();
@@ -48,28 +50,43 @@ export default function ProfileScreen() {
 
       <View className="px-6 -mt-8">
         <View className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mb-6">
-          <Text className="text-emerald-900 font-bold mb-4 uppercase text-xs tracking-wider">Account Settings</Text>
+          <Text style={{ fontFamily: 'FjallaOne' }} className="text-emerald-900 mb-4 uppercase text-xs tracking-[2px]">Account Settings</Text>
           
-          <TouchableOpacity className="flex-row items-center py-4 border-b border-gray-50">
-            <User size={20} color="#064E3B" />
-            <Text className="flex-1 ml-4 text-gray-700">Personal Information</Text>
+          <TouchableOpacity 
+            onPress={() => router.push('/edit-profile')}
+            className="flex-row items-center py-4 border-b border-gray-50"
+          >
+            <View className="bg-emerald-50 p-2 rounded-xl">
+              <User size={18} color="#064E3B" />
+            </View>
+            <Text className="flex-1 ml-4 text-emerald-900 font-medium">Personal Information</Text>
+            <ArrowLeft size={16} color="#064E3B" style={{ transform: [{ rotate: '180deg' }] }} />
           </TouchableOpacity>
 
           {profile?.role === 'male' && (
             <TouchableOpacity className="flex-row items-center py-4 border-b border-gray-50">
-              <CreditCard size={20} color="#064E3B" />
-              <Text className="flex-1 ml-4 text-gray-700">Billing & Activation</Text>
+              <View className="bg-emerald-50 p-2 rounded-xl">
+                <CreditCard size={18} color="#064E3B" />
+              </View>
+              <Text className="flex-1 ml-4 text-emerald-900 font-medium">Billing & Activation</Text>
+              <ArrowLeft size={16} color="#064E3B" style={{ transform: [{ rotate: '180deg' }] }} />
             </TouchableOpacity>
           )}
 
           <TouchableOpacity className="flex-row items-center py-4 border-b border-gray-50">
-            <Settings size={20} color="#064E3B" />
-            <Text className="flex-1 ml-4 text-gray-700">Notification Preferences</Text>
+            <View className="bg-emerald-50 p-2 rounded-xl">
+              <Settings size={18} color="#064E3B" />
+            </View>
+            <Text className="flex-1 ml-4 text-emerald-900 font-medium">Notification Preferences</Text>
+            <ArrowLeft size={16} color="#064E3B" style={{ transform: [{ rotate: '180deg' }] }} />
           </TouchableOpacity>
 
           <TouchableOpacity className="flex-row items-center py-4">
-            <HelpCircle size={20} color="#064E3B" />
-            <Text className="flex-1 ml-4 text-gray-700">Help & Support</Text>
+            <View className="bg-emerald-50 p-2 rounded-xl">
+              <HelpCircle size={18} color="#064E3B" />
+            </View>
+            <Text className="flex-1 ml-4 text-emerald-900 font-medium">Help & Support</Text>
+            <ArrowLeft size={16} color="#064E3B" style={{ transform: [{ rotate: '180deg' }] }} />
           </TouchableOpacity>
         </View>
 

@@ -126,29 +126,79 @@ export default function DiscoveryScreen() {
   }
 
   const renderItem = ({ item }: { item: Profile }) => (
-    <View className="bg-white rounded-3xl mb-6 overflow-hidden shadow-sm border border-gray-100">
-      <Image
-        source={item.avatar_url || 'https://images.unsplash.com/photo-1594241081155-27a3a6944e05?q=80&w=3270&auto=format&fit=crop'}
-        className="w-full h-80"
-        contentFit="cover"
-      />
-      <View className="p-5">
-        <View className="flex-row justify-between items-center mb-2">
-          <Text className="text-2xl font-bold text-emerald-900">
-            {item.first_name}, {item.last_name}
-          </Text>
-          {item.is_verified && <ShieldCheck size={20} color="#D97706" />}
+    <View className="bg-white rounded-[40px] mb-8 overflow-hidden shadow-2xl border border-gray-100 pb-6">
+      <View className="bg-emerald-950 p-6 flex-row justify-between items-center">
+        <View>
+          <Text style={{ fontFamily: 'ArchivoBlack' }} className="text-white text-xl uppercase tracking-tighter">HDA Profile</Text>
+          <Text className="text-emerald-400 text-[10px] tracking-[2px]">ID: {item.id.slice(0, 8).toUpperCase()}</Text>
         </View>
-        <Text className="text-gray-600 mb-4 leading-5" numberOfLines={3}>
-          {item.bio || "Seeking for a meaningful connection based on Islamic values..."}
-        </Text>
-        
+        <Image
+          source={item.avatar_url || 'https://images.unsplash.com/photo-1594241081155-27a3a6944e05?q=80&w=3270&auto=format&fit=crop'}
+          className="w-16 h-16 rounded-full border-2 border-gold-500"
+          contentFit="cover"
+        />
+      </View>
+
+      <View className="p-6 space-y-4">
+        {/* Quadrant Grid */}
+        <View className="flex-row gap-4">
+          {/* PROFIL */}
+          <View className="flex-1 bg-gray-50 p-4 rounded-3xl border-l-4 border-red-500">
+            <Text style={{ fontFamily: 'FjallaOne' }} className="text-emerald-900 mb-2 uppercase text-xs tracking-widest">Profil</Text>
+            <View className="space-y-1">
+              <Text className="text-[11px] text-gray-500">Origin: <Text className="text-emerald-900 font-bold">{item.ethnicity || 'N/A'}</Text></Text>
+              <Text className="text-[11px] text-gray-500">Age: <Text className="text-emerald-900 font-bold">{item.age || 'N/A'} years</Text></Text>
+              <Text className="text-[11px] text-gray-500">Gender: <Text className="text-emerald-900 font-bold">Female</Text></Text>
+            </View>
+          </View>
+          
+          {/* DINE */}
+          <View className="flex-1 bg-gray-50 p-4 rounded-3xl border-l-4 border-purple-600">
+            <Text style={{ fontFamily: 'FjallaOne' }} className="text-emerald-900 mb-2 uppercase text-xs tracking-widest">Dine</Text>
+            <View className="space-y-1">
+              <Text className="text-[11px] text-gray-500">Prayer: <Text className="text-emerald-900 font-bold">{item.prayer_frequency || 'N/A'}</Text></Text>
+              <Text className="text-[11px] text-gray-500">Practice: <Text className="text-emerald-900 font-bold">{item.practice_level?.includes('Sunnah') ? 'Advanced' : 'Standard'}</Text></Text>
+              <Text className="text-[11px] text-gray-500">Arabic: <Text className="text-emerald-900 font-bold">{item.reads_arabic ? 'Yes' : 'No'}</Text></Text>
+            </View>
+          </View>
+        </View>
+
+        <View className="flex-row gap-4">
+          {/* PREFERENCES */}
+          <View className="flex-1 bg-gray-50 p-4 rounded-3xl border-l-4 border-green-500">
+            <Text style={{ fontFamily: 'FjallaOne' }} className="text-emerald-900 mb-2 uppercase text-xs tracking-widest">Preferences</Text>
+            <View className="space-y-1">
+              <Text className="text-[11px] text-gray-500">Age Gap: <Text className="text-emerald-900 font-bold">{item.age_gap_pref || 'Open'}</Text></Text>
+              <Text className="text-[11px] text-gray-500">Divorced: <Text className="text-emerald-900 font-bold">{item.accepts_divorced ? 'Yes' : 'No'}</Text></Text>
+              <Text className="text-[11px] text-gray-500">Origin: <Text className="text-emerald-900 font-bold">{item.ethnicity_pref || 'Open'}</Text></Text>
+            </View>
+          </View>
+
+          {/* SITUATION */}
+          <View className="flex-1 bg-gray-50 p-4 rounded-3xl border-l-4 border-blue-400">
+            <Text style={{ fontFamily: 'FjallaOne' }} className="text-emerald-900 mb-2 uppercase text-xs tracking-widest">Situation</Text>
+            <View className="space-y-1">
+              <Text className="text-[11px] text-gray-500">Job: <Text className="text-emerald-900 font-bold" numberOfLines={1}>{item.job || 'N/A'}</Text></Text>
+              <Text className="text-[11px] text-gray-500">Kids: <Text className="text-emerald-900 font-bold">{item.has_children ? 'Yes' : 'No'}</Text></Text>
+              <Text className="text-[11px] text-gray-500">Status: <Text className="text-emerald-900 font-bold">{item.was_married ? 'Previously Married' : 'Single'}</Text></Text>
+            </View>
+          </View>
+        </View>
+
+        {/* DESCRIPTION */}
+        <View className="bg-emerald-50/50 p-4 rounded-3xl border border-emerald-900/5">
+          <Text style={{ fontFamily: 'FjallaOne' }} className="text-emerald-900 mb-2 uppercase text-[10px] tracking-widest">Description</Text>
+          <Text className="text-gray-600 text-xs leading-5">
+            {item.bio || "Seeking for a meaningful connection based on Islamic values and mutual respect. May Allah grant us success."}
+          </Text>
+        </View>
+
         <TouchableOpacity 
-          className="bg-emerald-900 flex-row justify-center items-center py-4 rounded-xl"
+          className="bg-emerald-900 flex-row justify-center items-center py-5 rounded-[24px] mt-2 shadow-xl shadow-emerald-900/40"
           onPress={() => handleRequest(item)}
         >
-          <Heart size={20} color="white" className="mr-2" />
-          <Text className="text-white font-bold ml-2">Contact Wali</Text>
+          <Heart size={20} color="white" fill="white" className="mr-2" />
+          <Text style={{ fontFamily: 'FjallaOne' }} className="text-white font-bold ml-2 uppercase tracking-widest">Contact Wali</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -24,6 +24,20 @@ export interface Database {
                     subscription_expires_at: string | null
                     wali_id: string | null
                     is_verified: boolean | null
+                    ethnicity: string | null
+                    age: number | null
+                    prayer_frequency: string | null
+                    practice_level: string | null
+                    quran_knowledge: number | null
+                    reads_arabic: boolean | null
+                    veil_type: string | null
+                    age_gap_pref: string | null
+                    accepts_divorced: boolean | null
+                    accepts_children: boolean | null
+                    ethnicity_pref: string | null
+                    job: string | null
+                    has_children: boolean | null
+                    was_married: boolean | null
                     created_at: string | null
                     updated_at: string | null
                 }
@@ -41,6 +55,20 @@ export interface Database {
                     subscription_expires_at?: string | null
                     wali_id?: string | null
                     is_verified?: boolean | null
+                    ethnicity?: string | null
+                    age?: number | null
+                    prayer_frequency?: string | null
+                    practice_level?: string | null
+                    quran_knowledge?: number | null
+                    reads_arabic?: boolean | null
+                    veil_type?: string | null
+                    age_gap_pref?: string | null
+                    accepts_divorced?: boolean | null
+                    accepts_children?: boolean | null
+                    ethnicity_pref?: string | null
+                    job?: string | null
+                    has_children?: boolean | null
+                    was_married?: boolean | null
                     created_at?: string | null
                     updated_at?: string | null
                 }
@@ -58,6 +86,20 @@ export interface Database {
                     subscription_expires_at?: string | null
                     wali_id?: string | null
                     is_verified?: boolean | null
+                    ethnicity?: string | null
+                    age?: number | null
+                    prayer_frequency?: string | null
+                    practice_level?: string | null
+                    quran_knowledge?: number | null
+                    reads_arabic?: boolean | null
+                    veil_type?: string | null
+                    age_gap_pref?: string | null
+                    accepts_divorced?: boolean | null
+                    accepts_children?: boolean | null
+                    ethnicity_pref?: string | null
+                    job?: string | null
+                    has_children?: boolean | null
+                    was_married?: boolean | null
                     created_at?: string | null
                     updated_at?: string | null
                 }
