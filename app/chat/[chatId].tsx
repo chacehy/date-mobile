@@ -131,7 +131,13 @@ export default function ChatRoomScreen() {
           <ArrowLeft size={24} color="#064E3B" />
         </TouchableOpacity>
         <Text className="text-lg font-bold text-emerald-900">Chat with Wali</Text>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity 
+          onPress={() => Alert.alert('Chat Options', 'What would you like to do?', [
+            { text: 'Block User', style: 'destructive', onPress: () => Alert.alert('Blocked', 'User has been blocked.') },
+            { text: 'Report User', style: 'destructive', onPress: () => Alert.alert('Reported', 'Our team will review this chat.') },
+            { text: 'Cancel', style: 'cancel' }
+          ])}
+        >
            <MoreVertical size={24} color="#064E3B" />
         </TouchableOpacity>
       </View>

@@ -54,14 +54,6 @@ export default function RegisterScreen() {
   }
 
   async function handleSignUp() {
-    if (password.length < 6) {
-      Alert.alert('Weak Password', 'Password must be at least 6 characters.');
-      return;
-    }
-    if (role === 'male' && !image) {
-      Alert.alert('Photo Required', 'Please upload a profile photo to continue.');
-      return;
-    }
     if (role === 'wali' && !image) {
       Alert.alert('ID Required', 'Please upload your ID card for verification.');
       return;
@@ -123,12 +115,8 @@ export default function RegisterScreen() {
 
       // 3. Upload Images if present
       try {
-        if (image) {
-          if (role === 'male') {
-            avatarUrl = await uploadImage(image, 'avatars', `${authData.user.id}/avatar.jpg`);
-          } else if (role === 'wali') {
-            idCardUrl = await uploadImage(image, 'id-cards', idPath);
-          }
+        if (image && role === 'wali') {
+          idCardUrl = await uploadImage(image, 'id-cards', idPath);
         }
       } catch (uploadError: any) {
         Alert.alert('Upload Failed', uploadError.message);
@@ -380,10 +368,10 @@ export default function RegisterScreen() {
               />
             </View>
 
-            {(role === 'male' || role === 'wali') && (
+            {role === 'wali' && (
               <View className="mt-4">
                 <Text style={{ fontFamily: 'FjallaOne' }} className="text-emerald-900 mb-3 uppercase tracking-wider text-xs">
-                  {role === 'male' ? 'Profile Photo' : 'ID Card Photo'}
+                  ID Card Photo
                 </Text>
                 <TouchableOpacity 
                   onPress={pickImage}
@@ -393,7 +381,7 @@ export default function RegisterScreen() {
                     <MotiView from={{ scale: 0.5 }} animate={{ scale: 1 }}>
                       <Image 
                         source={{ uri: image.uri }} 
-                        className="w-40 h-40 rounded-full border-4 border-white shadow-lg" 
+                        className="w-40 h-40 rounded-3xl border-4 border-white shadow-lg" 
                         resizeMode="cover"
                       />
                       <TouchableOpacity onPress={pickImage} className="absolute bottom-0 right-0 bg-gold-600 p-3 rounded-full shadow-lg">
@@ -407,7 +395,7 @@ export default function RegisterScreen() {
                         transition={{ loop: true, duration: 2000 }}
                         className="bg-emerald-900/10 p-5 rounded-full mb-3"
                       >
-                        {role === 'male' ? <Camera size={32} color="#064E3B" /> : <ImageIcon size={32} color="#064E3B" />}
+                        <ImageIcon size={32} color="#064E3B" />
                       </MotiView>
                       <Text style={{ fontFamily: 'FjallaOne' }} className="text-emerald-900 uppercase">Tap to Upload</Text>
                     </View>

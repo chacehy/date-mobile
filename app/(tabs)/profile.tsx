@@ -1,6 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/utils/supabase';
-import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, CreditCard, HelpCircle, LogOut, Settings, ShieldCheck, User } from 'lucide-react-native';
 import React from 'react';
@@ -21,13 +20,12 @@ export default function ProfileScreen() {
     <ScrollView className="flex-1 bg-gray-50">
       <View className="bg-emerald-900 pt-16 pb-12 px-8 items-center rounded-b-[40px] shadow-lg">
         <View className="relative">
-          <Image
-            source={profile?.avatar_url || 'https://images.unsplash.com/photo-1594241081155-27a3a6944e05?q=80&w=3270&auto=format&fit=crop'}
-            className="w-32 h-32 rounded-full border-4 border-gold-500"
-          />
+          <View className="w-32 h-32 rounded-full border-4 border-gold-500 bg-emerald-800 items-center justify-center shadow-inner">
+            <User size={64} color="#FBBF24" />
+          </View>
           {profile?.is_verified && (
-            <View className="absolute bottom-0 right-0 bg-gold-500 p-2 rounded-full border-2 border-emerald-900">
-              <ShieldCheck size={16} color="white" />
+            <View className="absolute bottom-1 right-1 bg-gold-500 p-2.5 rounded-full border-2 border-emerald-900 shadow-sm">
+              <ShieldCheck size={18} color="white" />
             </View>
           )}
         </View>
@@ -64,7 +62,10 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           {profile?.role === 'male' && (
-            <TouchableOpacity className="flex-row items-center py-4 border-b border-gray-50">
+            <TouchableOpacity 
+              onPress={() => Alert.alert('Billing & Subscription', 'You can manage your activation and billing history here. Feature coming soon in the next update!')}
+              className="flex-row items-center py-4 border-b border-gray-50"
+            >
               <View className="bg-emerald-50 p-2 rounded-xl">
                 <CreditCard size={18} color="#064E3B" />
               </View>
@@ -73,7 +74,10 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity className="flex-row items-center py-4 border-b border-gray-50">
+          <TouchableOpacity 
+            onPress={() => Alert.alert('Notifications', 'Personalize how you receive updates about potential matches and messages.')}
+            className="flex-row items-center py-4 border-b border-gray-50"
+          >
             <View className="bg-emerald-50 p-2 rounded-xl">
               <Settings size={18} color="#064E3B" />
             </View>
@@ -81,7 +85,10 @@ export default function ProfileScreen() {
             <ArrowLeft size={16} color="#064E3B" style={{ transform: [{ rotate: '180deg' }] }} />
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center py-4">
+          <TouchableOpacity 
+            onPress={() => Alert.alert('Help & Support', 'Our team is here to help you. Email us at support@hda-match.com for any inquiries.')}
+            className="flex-row items-center py-4"
+          >
             <View className="bg-emerald-50 p-2 rounded-xl">
               <HelpCircle size={18} color="#064E3B" />
             </View>

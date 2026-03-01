@@ -1,7 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
 import { Database } from '@/types/database.types';
 import { supabase } from '@/utils/supabase';
-import { Image } from 'expo-image';
 import { Heart, ShieldCheck } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View } from 'react-native';
@@ -14,7 +13,7 @@ export default function DiscoveryScreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (profile?.role === 'male' && profile.is_subscribed) {
+    if (profile?.role && (profile.role === 'male' || profile.role === 'female') && profile.is_subscribed) {
       fetchProfiles();
     } else {
       setLoading(false);
@@ -23,10 +22,11 @@ export default function DiscoveryScreen() {
 
   async function fetchProfiles() {
     setLoading(true);
+    const targetRole = profile?.role === 'male' ? 'female' : 'male';
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
-      .eq('role', 'female')
+      .eq('role', targetRole)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -84,14 +84,14 @@ export default function DiscoveryScreen() {
     );
   }
 
-  if (profile?.role !== 'male') {
+  if (profile?.role === 'wali') {
     return (
       <View className="flex-1 justify-center items-center bg-white px-8">
         <Text className="text-xl font-bold text-emerald-900 text-center mb-2">
-          Welcome to Halal Match
+          Guardian Dashboard
         </Text>
         <Text className="text-gray-500 text-center">
-          Navigate to 'Requests' to see incoming proposals.
+          Navigate to 'Requests' to see incoming proposals for your ward.
         </Text>
       </View>
     );
@@ -132,11 +132,9 @@ export default function DiscoveryScreen() {
           <Text style={{ fontFamily: 'ArchivoBlack' }} className="text-white text-xl uppercase tracking-tighter">HDA Profile</Text>
           <Text className="text-emerald-400 text-[10px] tracking-[2px]">ID: {item.id.slice(0, 8).toUpperCase()}</Text>
         </View>
-        <Image
-          source={item.avatar_url || 'https://images.unsplash.com/photo-1594241081155-27a3a6944e05?q=80&w=3270&auto=format&fit=crop'}
-          className="w-16 h-16 rounded-full border-2 border-gold-500"
-          contentFit="cover"
-        />
+        <View className="w-16 h-16 rounded-full bg-emerald-900 border-2 border-gold-500 items-center justify-center">
+          <Heart size={32} color="#D97706" />
+        </View>
       </View>
 
       <View className="p-6 space-y-4">
@@ -148,7 +146,7 @@ export default function DiscoveryScreen() {
             <View className="space-y-1">
               <Text className="text-[11px] text-gray-500">Origin: <Text className="text-emerald-900 font-bold">{item.ethnicity || 'N/A'}</Text></Text>
               <Text className="text-[11px] text-gray-500">Age: <Text className="text-emerald-900 font-bold">{item.age || 'N/A'} years</Text></Text>
-              <Text className="text-[11px] text-gray-500">Gender: <Text className="text-emerald-900 font-bold">Female</Text></Text>
+              <Text className="text-[11px] text-gray-500">Gender: <Text className="text-emerald-900 font-bold uppercase">{item.role}</Text></Text>
             </View>
           </View>
           
